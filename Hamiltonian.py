@@ -87,9 +87,9 @@ def Hamiltonian3LevelsLadderTM(psi_inic, N, t, chi, eta,omega_r, omega_l, omega_
     Delta_l = np.abs(omega_12) - omega_l
     Delta_r = np.abs(omega_23) - omega_r
     
-    #Fiel operators
-    a_field_l = q.tensor(q.identity(3),q.destroy(N))
-    a_field_r = q.tensor(q.identity(3),q.destroy(N))
+    #Fiel operators , interact with:
+    a_field_l = q.tensor(q.identity(3),q.destroy(N)) # levels 1 and 2
+    a_field_r = q.tensor(q.identity(3),q.destroy(N)) # levels 2 and 3
     
     # Create atomic operators for the three-level system
     b1_electron = q.tensor(q.destroy(3), q.qeye(N))
@@ -97,7 +97,9 @@ def Hamiltonian3LevelsLadderTM(psi_inic, N, t, chi, eta,omega_r, omega_l, omega_
     b3_electron = q.tensor(q.qeye(3), q.destroy(N))
 
     # Create Atom Hamiltonian
-    H_A = omega_1 * b1_electron.dag() * b1_electron + omega_2 * b2_electron.dag() * b2_electron + omega_3 * b3_electron.dag() * b3_electron
+    # H_A = omega_1 * b1_electron.dag() * b1_electron + omega_2 * b2_electron.dag() * b2_electron + omega_3 * b3_electron.dag() * b3_electron
+    
+    # H_F = omega_l * a_field_l.dag()*a_field_l + omega_r*a_field_r.dag()*a_field_r
 
     H_p = chi* a_field_l * b2_electron.dag() * b1_electron + eta * a_field_r * b3_electron.dag() * b2_electron + np.conj(chi)* a_field_l.dag() * b2_electron * b1_electron.dag() + np.conj(eta) * a_field_r.dag() * b3_electron * b2_electron.dag()
     
@@ -106,8 +108,6 @@ def Hamiltonian3LevelsLadderTM(psi_inic, N, t, chi, eta,omega_r, omega_l, omega_
     N_hat_l = a_field_l.dag() * a_field_l - b1_electron.dag() * b1_electron + q.eye(N)
     
     N_hat_r = a_field_r.dag() * a_field_r + b3_electron.dag() * b3_electron
-    
-    H_F = omega_l * a_field_l.dag()*a_field_l + omega_r*a_field_r.dag()*a_field_r
     
     H_i = omega_l*N_hat_r + omega_r*N_hat_l + (omega_2) * P_e - omega_l*q.eye(N)
     
