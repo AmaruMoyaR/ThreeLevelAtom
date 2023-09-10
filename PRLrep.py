@@ -32,11 +32,11 @@ AnimatePopulation(tasa_inversion_i,tiempo_i,'populationwignerfock')
 # ax.set_title('Entropia de Von Neumann')
 
 Fidelityfock= []
-for i in range(len(evolucion_temporal_estado_Fock)):
-    Fidelityfock.append(q.fidelity(evolucion_temporal_estado_Fock[i], q.fock(2*N,10)))
+for i in range(len(evolucion_temporal_estado_i)):
+    Fidelityfock.append(q.fidelity(evolucion_temporal_estado_i[i], q.fock(2*N,10)))
 
 fig, ax = plt.subplots(figsize=(6, 6))    
-ax.plot(tiempo,Fidelityfock , color = 'firebrick')
+ax.plot(tiempo_i,Fidelityfock , color = 'firebrick')
 ax.set_xlabel('Tiempo')
 ax.set_ylabel('Fidelity')
 ax.set_title('Fidelidad Fock')
