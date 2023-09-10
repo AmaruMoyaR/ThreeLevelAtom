@@ -10,10 +10,7 @@ from Basis import *
 
 
 def Hamiltonian_2levels(psi_inic, N , t = 300, w0 = 1. , w = 1., lamda = 1):
-    #Constantes del sistema
-    # w0 = 1
-    # w = 1
-    # lamda = 1
+    
     #Creamos los operadores para el hamiltoniano
     sig_atomo = q.tensor(q.destroy(2),q.identity(N)) #producto tensorial entre sigma 2 y la identidad N
     a_campo = q.tensor(q.identity(2),q.destroy(N)) #producto tensorial entre la identidad 2 y operador destruccion N
@@ -35,22 +32,87 @@ def Hamiltonian_2levels(psi_inic, N , t = 300, w0 = 1. , w = 1., lamda = 1):
     
     return evolucion_temporal_estado, tiempo, tasa_inversion
 
-def Hamiltonian3LevelsLadder(psi_inic, N, t, chi, eta):
-    
-    a_campo = q.tensor(q.identity(3),q.destroy(N))
-    
-    
+
+
+
+
+
+def Hamiltonian3LevelsLadderOM(psi_inic, N, t, chi, eta, omega, omega_1, omega_2, omega_3):
+    #we build the hamiltonian for a 3 level system in ladder configuration
+    #this means that we will have transitions between levels, excited by an external field of a single mode
+    omega_12 = omega_1 - omega_2
+    omega_23 = omega_2 - omega_3
     Delta_l = np.abs(omega_12) - omega
-    Delta_r = np.ans(omega_23) - omega
+    Delta_r = np.abs(omega_23) - omega
     
-    H_p = chi* a_campo * b2_electron.dag() * b1_electron + eta * a_campo * b3_electron.dag() * b2_electron + chi* a_campo.dag() * b2_electron * b1_electron.dag() + eta * a_campo.dag() * b3_electron * b2_electron.dag()
+    a_field = q.tensor(q.qeye(3),q.destroy(N))
+    
+    # Create atomic operators for the three-level system
+    b1_electron = q.tensor(q.destroy(3), q.qeye(N))
+    b2_electron = q.tensor(q.qeye(3), q.destroy(N))
+    b3_electron = q.tensor(q.qeye(3), q.destroy(N))
+    
+    #ESTOS NO ESTAN BUENOS!!!1 Pero me gustaría definirlo de esta manera más adelante
+    
+    # sigma11 = q.tensor(q.basis(3,0)*q.basis(3,0).dag(),q.identity(N)) 
+    # sigma12 = q.tensor(q.basis(3,0)*q.basis(3,1).dag(),q.identity(N))
+    # sigma21 = q.tensor(q.basis(3,1)*q.basis(3,0).dag(),q.identity(N))
+    # sigma22 = q.tensor(q.basis(3,1)*q.basis(3,1).dag(),q.identity(N))
+    # sigma23 = q.tensor(q.basis(3,1)*q.basis(3,2).dag(),q.identity(N))
+    # sigma32 = q.tensor(q.basis(3,2)*q.basis(3,1).dag(),q.identity(N))
+    # sigma33 = q.tensor(q.basis(3,2)*q.basis(3,2).dag(),q.identity(N))
+    
+    
+    
+    H_p = chi* a_field * b2_electron.dag() * b1_electron + eta * a_field * b3_electron.dag() * b2_electron + np.conj(chi)* a_field.dag() * b2_electron * b1_electron.dag() + np.conj(eta) * a_field.dag() * b3_electron * b2_electron.dag()
     
     P_e = b1_electron.dag() * b1_electron + b2_electron.dag() * b2_electron + b3_electron.dag() * b3_electron
     
-    N_hat = a_campo.dag() * a_campo + b3_electron.dag() * b3_electron - b1_electron.dag() * b1_electron + q.eye(N)
+    N_hat = a_field.dag() * a_field + b3_electron.dag() * b3_electron - b1_electron.dag() * b1_electron + q.eye(N)
     
     H_i = omega * (N_hat - 1) + (omega_2 - omega) * P_e
     
     H_ii = - Delta_l * b1_electron.dag() * b1_electron + Delta_r * b2_electron.dag() * b2_electron
     
     H = H_p + H_i + H_ii
+    
+    return H
+    
+    
+def Hamiltonian3LevelsLadderTM(psi_inic, N, t, chi, eta,omega_r, omega_l, omega_1, omega_2, omega_3):
+    #chi and eta are coupling constants (not necesarilly real)
+    #I do not know when or how to define them yet!
+    omega_12 = omega_1 - omega_2
+    omega_23 = omega_2 - omega_3
+    Delta_l = np.abs(omega_12) - omega_l
+    Delta_r = np.abs(omega_23) - omega_r
+    
+    #Fiel operators
+    a_field_l = q.tensor(q.identity(3),q.destroy(N))
+    a_field_r = q.tensor(q.identity(3),q.destroy(N))
+    
+    # Create atomic operators for the three-level system
+    b1_electron = q.tensor(q.destroy(3), q.qeye(N))
+    b2_electron = q.tensor(q.qeye(3), q.destroy(N))
+    b3_electron = q.tensor(q.qeye(3), q.destroy(N))
+
+    # Create Atom Hamiltonian
+    H_A = omega_1 * b1_electron.dag() * b1_electron + omega_2 * b2_electron.dag() * b2_electron + omega_3 * b3_electron.dag() * b3_electron
+
+    H_p = chi* a_field_l * b2_electron.dag() * b1_electron + eta * a_field_r * b3_electron.dag() * b2_electron + np.conj(chi)* a_field_l.dag() * b2_electron * b1_electron.dag() + np.conj(eta) * a_field_r.dag() * b3_electron * b2_electron.dag()
+    
+    P_e = b1_electron.dag() * b1_electron + b2_electron.dag() * b2_electron + b3_electron.dag() * b3_electron
+    
+    N_hat_l = a_field_l.dag() * a_field_l - b1_electron.dag() * b1_electron + q.eye(N)
+    
+    N_hat_r = a_field_r.dag() * a_field_r + b3_electron.dag() * b3_electron
+    
+    H_F = omega_l * a_field_l.dag()*a_field_l + omega_r*a_field_r.dag()*a_field_r
+    
+    H_i = omega_l*N_hat_r + omega_r*N_hat_l + (omega_2) * P_e - omega_l*q.eye(N)
+    
+    H_ii = - Delta_l * b1_electron.dag() * b1_electron + Delta_r * b3_electron.dag() * b3_electron + H_p
+    
+    H = H_i + H_ii
+    
+    return H
