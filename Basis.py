@@ -6,6 +6,7 @@ import matplotlib
 import matplotlib.animation as animation
 import matplotlib.cm as cm
 import datetime as dt
+from tqdm import tqdm
 
 # xvec = np.linspace(-6, 6, 1500)
 def wigner_cmap(W, levels=1024, shift=-0.01, max_color='#09224F',
@@ -276,7 +277,14 @@ def Plot_Population(tiempo, tasa_inversion, color):
     
     
 def WignerEvolution(State_in_time,xvec, listw): #esta se demora mas q yo en licenciarme
+    
     for i in range(len(State_in_time)):
+        listw.append(q.wigner(State_in_time[i],xvec,xvec))    
+    return listw
+
+
+def WignerEvolutionbar(State_in_time,xvec, listw): #esta se demora mas q yo en licenciarme
+    for i in tqdm(range(len(State_in_time))):
         listw.append(q.wigner(State_in_time[i],xvec,xvec))    
     return listw
 
