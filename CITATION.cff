@@ -1,0 +1,25 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: ThreeLevelAtom
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Amaru Gael
+    family-names: Moya Ragal
+    email: amaru.moya.ragal@gmail.com
+    affiliation: 'Universidad de Chile, Universidad de Concepción'
+identifiers:
+  - type: url
+    value: 'https://github.com/AmaruMoyaR/ThreeLevelAtom'
+    description: Github Repository
+repository-code: 'https://github.com/AmaruMoyaR/ThreeLevelAtom'
+keywords:
+  - Quantum Optics
+  - Three Level Atom
+  - Atomic & Molecular Physics
+  - Light Matter Interaction
+license: MIT
